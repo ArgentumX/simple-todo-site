@@ -33,14 +33,17 @@ namespace TODO.Services
             await _todoTasks.InsertOneAsync(todoTask);
         }
 
-        public async Task<bool> UpdateAsync(string id, TodoTask updatedTask)
+        public async Task<bool> UpdateAsync(string id, TodoTask source)
         {
             if (string.IsNullOrEmpty(id))
                 throw new ArgumentNullException(nameof(id));
-            if (updatedTask == null)
-                throw new ArgumentNullException(nameof(updatedTask));
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
 
-            var result = await _todoTasks.ReplaceOneAsync(task => task.Id == id, updatedTask);
+            TodoTask oldTask = await GetByIdAsync(id);
+            oldTask.Update(source);
+
+            var result = await _todoTasks.ReplaceOneAsync(task => task.Id == id, oldTask);
             return result.IsAcknowledged && result.ModifiedCount > 0;
         }
 
@@ -52,5 +55,6 @@ namespace TODO.Services
             var result = await _todoTasks.DeleteOneAsync(task => task.Id == id);
             return result.IsAcknowledged && result.DeletedCount > 0;
         }
+
     }
 }

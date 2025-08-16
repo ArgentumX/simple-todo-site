@@ -10,7 +10,7 @@ namespace TODO.Models
         [BsonId]
         [BindNever]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
-        public string Id { get; set; } = null!;
+        public string? Id { get; set; }
 
         [BsonElement("name")]
         [Required(ErrorMessage = "The Name field is required.")]
@@ -25,6 +25,13 @@ namespace TODO.Models
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+
+        public void Update(TodoTask source)
+        {
+            this.Name = source.Name;
+            this.Description = source.Description;
+        }
 
     }
 }

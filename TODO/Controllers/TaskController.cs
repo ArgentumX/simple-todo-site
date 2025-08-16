@@ -36,16 +36,23 @@ namespace TODO.Controllers
             }
         }
 
+        // GET: TaskController/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: TaskController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(TodoTask todoTask)
         {
             if (!ModelState.IsValid)
             {
-                // Log ModelState errors for debugging
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                foreach (var error in errors) {
-                    ModelState.AddModelError("", error); // Display in view
+                foreach (var error in errors)
+                {
+                    ModelState.AddModelError("", error);
                 }
                 return View(todoTask);
             }
@@ -88,12 +95,6 @@ namespace TODO.Controllers
 
             try
             {
-                if (id != todoTask.Id)
-                {
-                    ModelState.AddModelError("", "Task ID mismatch.");
-                    return View(todoTask);
-                }
-
                 var updated = await _taskService.UpdateAsync(id, todoTask);
                 if (!updated)
                     return NotFound();
@@ -106,6 +107,7 @@ namespace TODO.Controllers
             }
         }
 
+        // GET: TaskController/Delete/{id}
         public async Task<ActionResult> Delete(string id)
         {
             try
@@ -121,5 +123,25 @@ namespace TODO.Controllers
             }
         }
 
+        // POST: TaskController/Delete/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Delete(string id, TodoTask todoTask)
+        {
+            try
+            {
+                var deleted = await _taskService.DeleteAsync(id);
+                if (!deleted)
+                    return NotFound();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ArgumentNullException)
+            {
+                ModelState.AddModelError("", "Task ID cannot be null or empty.");
+                return View(todoTask);
+            }
+        }
+
     }
+
 }
