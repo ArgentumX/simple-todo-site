@@ -15,9 +15,8 @@ else
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Title</th>
+                <th>Name</th>
                 <th>Description</th>
-                <th>Completed</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -27,11 +26,21 @@ else
                 <tr>
                     <td>@task.Name</td>
                     <td>@(task.Description ?? "No description")</td>
-                    <td>@(task.IsCompleted ? "Yes" : "No")</td>
                     <td>
                         <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-info btn-sm">Details</a>
                         <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-warning btn-sm">Edit</a>
                         <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-danger btn-sm">Delete</a>
+                        @if (!task.IsCompleted)
+                        {
+                            <form asp-action="Complete" asp-route-id="@task.Id" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success btn-sm">Complete</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="btn btn-success btn-sm disabled">Completed</span>
+                        }
                     </td>
                 </tr>
             }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using TODO.Models;
 using TODO.Services;
 
@@ -142,6 +143,23 @@ namespace TODO.Controllers
             }
         }
 
+        // POST: TaskController/Complete/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Complete(string id)
+        {
+            try
+            {
+                var result = await _taskService.CompleteAsync(id);
+                if (!result)
+                    return NotFound();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest("Task ID cannot be null or empty.");
+            }
+        }
     }
 
 }

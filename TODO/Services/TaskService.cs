@@ -41,7 +41,11 @@ namespace TODO.Services
                 throw new ArgumentNullException(nameof(source));
 
             TodoTask oldTask = await GetByIdAsync(id);
-            oldTask.Update(source);
+
+            {
+                oldTask.Name = source.Name;
+                oldTask.Description = source.Description;
+            }
 
             var result = await _todoTasks.ReplaceOneAsync(task => task.Id == id, oldTask);
             return result.IsAcknowledged && result.ModifiedCount > 0;
@@ -54,6 +58,16 @@ namespace TODO.Services
 
             var result = await _todoTasks.DeleteOneAsync(task => task.Id == id);
             return result.IsAcknowledged && result.DeletedCount > 0;
+        }
+
+        public async Task<bool> CompleteAsync(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                throw new ArgumentNullException(nameof(id));
+            var task = await GetByIdAsync(id);
+            task.IsCompleted = true;
+            var result = await _todoTasks.ReplaceOneAsync(task => task.Id == id, task);
+            return result.IsAcknowledged && result.ModifiedCount > 0;
         }
 
     }

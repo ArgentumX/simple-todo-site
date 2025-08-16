@@ -26,12 +26,5 @@ namespace TODO.Models
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-
-        public void Update(TodoTask source)
-        {
-            this.Name = source.Name;
-            this.Description = source.Description;
-        }
-
     }
 }

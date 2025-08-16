@@ -20,3 +20,38 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+
+body.dark-theme {
+    background-color: #212529; 
+    color: #e9ecef; 
+}
+
+body.dark-theme .container {
+    background-color: #343a40; 
+    border-radius: 8px;
+    padding: 20px;
+}
+
+body.dark-theme .table {
+    background-color: #495057; 
+    color: #e9ecef;
+}
+
+body.dark-theme .table th,
+body.dark-theme .table td {
+    border-color: #6c757d;
+}
+
+body.dark-theme .btn-primary,
+body.dark-theme .btn-success,
+body.dark-theme .btn-info,
+body.dark-theme .btn-warning,
+body.dark-theme .btn-danger {
+    color: #fff; 
+}
+
+body.dark-theme .text-muted {
+    color: #adb5bd !important; /
+}
