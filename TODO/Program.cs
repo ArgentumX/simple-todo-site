@@ -1,7 +1,20 @@
+using MongoDB.Driver;
+using TODO.Models;
+using TODO.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// MongoDB
+builder.Services.AddSingleton<IMongoClient>(sp =>
+    new MongoClient("mongodb://localhost:27017"));
+builder.Services.AddSingleton(sp =>
+    sp.GetRequiredService<IMongoClient>().GetDatabase("TodoDb"));
+
+// Inner services
+builder.Services.AddSingleton<TaskService>();
 
 var app = builder.Build();
 
@@ -22,6 +35,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Task}/{action=Index}/{id?}");
 
 app.Run();
+
