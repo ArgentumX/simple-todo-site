@@ -37,5 +37,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Task}/{action=Index}/{id?}");
 
+
+app.MapControllerRoute(
+    name: "static",
+    pattern: "{controller=Static}/{action=About}");
+
 app.Run();
 
