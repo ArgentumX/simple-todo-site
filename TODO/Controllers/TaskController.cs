@@ -24,17 +24,10 @@ namespace TODO.Controllers
         // GET: TaskController/Details/{id}
         public async Task<ActionResult> Details(string id)
         {
-            try
-            {
-                var task = await _taskService.GetByIdAsync(id);
-                if (task == null)
-                    return NotFound();
-                return View(task);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Task ID cannot be null or empty.");
-            }
+            var task = await _taskService.GetByIdAsync(id);
+            if (task == null)
+                return NotFound();
+            return View(task);
         }
 
         // GET: TaskController/Create
@@ -57,33 +50,17 @@ namespace TODO.Controllers
                 }
                 return View(todoTask);
             }
-
-            try
-            {
-                await _taskService.CreateAsync(todoTask);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (ArgumentNullException ex)
-            {
-                ModelState.AddModelError("", $"Task data cannot be null: {ex.Message}");
-                return View(todoTask);
-            }
+            await _taskService.CreateAsync(todoTask);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: TaskController/Edit/{id}
         public async Task<ActionResult> Edit(string id)
         {
-            try
-            {
                 var task = await _taskService.GetByIdAsync(id);
                 if (task == null)
                     return NotFound();
                 return View(task);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Task ID cannot be null or empty.");
-            }
         }
 
         // POST: TaskController/Edit/{id}
@@ -94,34 +71,19 @@ namespace TODO.Controllers
             if (!ModelState.IsValid)
                 return View(todoTask);
 
-            try
-            {
-                var updated = await _taskService.UpdateAsync(id, todoTask);
-                if (!updated)
-                    return NotFound();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (ArgumentNullException)
-            {
-                ModelState.AddModelError("", "Task ID or data cannot be null.");
-                return View(todoTask);
-            }
+            var updated = await _taskService.UpdateAsync(id, todoTask);
+            if (!updated)
+                return NotFound();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: TaskController/Delete/{id}
         public async Task<ActionResult> Delete(string id)
         {
-            try
-            {
-                var task = await _taskService.GetByIdAsync(id);
-                if (task == null)
-                    return NotFound();
-                return View(task);
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Task ID cannot be null or empty.");
-            }
+            var task = await _taskService.GetByIdAsync(id);
+            if (task == null)
+                return NotFound();
+            return View(task);
         }
 
         // POST: TaskController/Delete/{id}
@@ -129,18 +91,11 @@ namespace TODO.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(string id, TodoTask todoTask)
         {
-            try
-            {
-                var deleted = await _taskService.DeleteAsync(id);
-                if (!deleted)
-                    return NotFound();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (ArgumentNullException)
-            {
-                ModelState.AddModelError("", "Task ID cannot be null or empty.");
-                return View(todoTask);
-            }
+            var deleted = await _taskService.DeleteAsync(id);
+            if (!deleted)
+                return NotFound();
+            return RedirectToAction(nameof(Index));
+
         }
 
         // POST: TaskController/Complete/{id}
@@ -148,17 +103,10 @@ namespace TODO.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Complete(string id)
         {
-            try
-            {
-                var result = await _taskService.CompleteAsync(id);
-                if (!result)
-                    return NotFound();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (ArgumentNullException)
-            {
-                return BadRequest("Task ID cannot be null or empty.");
-            }
+            var result = await _taskService.CompleteAsync(id);
+            if (!result)
+                return NotFound();
+            return RedirectToAction(nameof(Index));
         }
     }
 

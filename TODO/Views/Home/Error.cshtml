@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Error";
+    Layout = "_Layout";
+}
+
+<h1 class="text-danger">Oops! Something went wrong...</h1>
+<p>
+    An unexpected error has occurred. Our team is already working on it.
+</p>
+
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-warning">
+        <strong>Details (for debugging):</strong> @ViewData["ErrorMessage"]
+    </div>
+}
+
+<p>
+    <a href="/" class="btn btn-primary">Back to Home</a>
+</p>

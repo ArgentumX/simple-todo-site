@@ -2,7 +2,7 @@
 
 namespace TODO.Controllers
 {
-    public class StaticController : Controller
+    public class HomeController : Controller
     {
         public IActionResult About()
         {
@@ -10,6 +10,11 @@ namespace TODO.Controllers
         }
 
         public IActionResult Rules()
+        {
+            return View();
+        }
+
+        public IActionResult Error()
         {
             return View();
         }

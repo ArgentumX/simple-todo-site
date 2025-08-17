@@ -21,9 +21,11 @@ namespace TODO.Models
         public string? Description { get; set; }
 
         [BsonElement("isCompleted")]
+        [BindNever]
         public bool IsCompleted { get; set; }
 
         [BsonElement("createdAt")]
+        [BindNever]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     }
