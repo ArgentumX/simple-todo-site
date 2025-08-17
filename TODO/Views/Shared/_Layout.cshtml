@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AspNetCore.Identity.Mongo.Model.MongoUser> SignInManager
+@inject UserManager<AspNetCore.Identity.Mongo.Model.MongoUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,29 +13,52 @@
     <link rel="stylesheet" href="~/TODO.styles.css" asp-append-version="true" />
 </head>
 <body class="dark-theme">
-    <!-- Added class to apply dark theme -->
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
-            <!-- Changed to navbar-dark bg-dark -->
             <div class="container-fluid">
-                <a class="navbar-brand text-light" asp-area="" asp-controller="Task" asp-action="Index">TODO</a> <!-- Adjusted text color -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand text-light" asp-controller="Task" asp-action="Index">TODO</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About</a> <!-- Adjusted text color -->
+                            <a class="nav-link text-light" asp-controller="Home" asp-action="About">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Rules">Rules</a> <!-- Added Rules link -->
+                            <a class="nav-link text-light" asp-controller="Home" asp-action="Rules">Rules</a>
                         </li>
                     </ul>
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item me-3">
+                                <span class="text-light fw-semibold">
+                                    👋 Hello, @UserManager.GetUserName(User)!
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm px-3">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-light btn-sm px-3" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-success btn-sm px-3" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                        }
+                    </ul>
+
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -39,11 +66,12 @@
     </div>
 
     <footer class="border-top footer text-muted bg-dark">
-        <!-- Added bg-dark to footer -->
         <div class="container">
-            &copy; 2025 - TODO - <a asp-area="" asp-controller="Home" asp-action="Rules" class="text-light">Rules</a> <!-- Adjusted text color -->
+            &copy; 2025 - TODO -
+            <a asp-controller="Home" asp-action="Rules" class="text-light">Rules</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

@@ -1,5 +1,6 @@
+using AspNetCore.Identity.Mongo;
+using AspNetCore.Identity.Mongo.Model;
 using MongoDB.Driver;
-using TODO.Models;
 using TODO.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,12 +13,18 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient("mongodb://localhost:27017"));
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IMongoClient>().GetDatabase("TodoDb"));
+builder.Services.AddIdentityMongoDbProvider<MongoUser>();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/account/login";
+    options.LogoutPath = "/account/logout";
+});
 
 // Inner services
 builder.Services.AddSingleton<TaskService>();
+builder.Services.AddScoped<AccountService>();
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -28,9 +35,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -41,6 +48,10 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "home",
     pattern: "{controller=Home}/{action=About}");
+
+app.MapControllerRoute(
+    name: "account",
+    pattern: "{controller=Account}/{action=Login}");
 
 app.Run();
 
