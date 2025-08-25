@@ -8,6 +8,7 @@
             <h2 class="mb-4 text-center">Login</h2>
 
             <form method="post" asp-action="Login">
+                @Html.AntiForgeryToken()
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
                     <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required />

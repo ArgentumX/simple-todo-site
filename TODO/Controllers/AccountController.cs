@@ -18,6 +18,7 @@ namespace TODO.Controllers
         public IActionResult Register() => View();
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(string username, string password)
         {
             var result = await _accountService.Register(username, password);
@@ -34,6 +35,7 @@ namespace TODO.Controllers
         public IActionResult Login() => View();
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string username, string password)
         {
             var result = await _accountService.Login(username, password);
@@ -44,6 +46,7 @@ namespace TODO.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _accountService.Logout();

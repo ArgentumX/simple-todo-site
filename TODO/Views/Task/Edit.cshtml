@@ -4,6 +4,7 @@
 }
 <h2>Edit Task</h2>
 <form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-groupName">
         <label asp-for="Name" class="control-label"></label>
