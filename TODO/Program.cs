@@ -17,7 +17,9 @@ builder.Services.AddIdentityMongoDbProvider<MongoUser>();
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/account/login";
+    options.AccessDeniedPath = "/account/login";
     options.LogoutPath = "/account/logout";
+    options.ReturnUrlParameter = "returnUrl";
 });
 
 // Inner services

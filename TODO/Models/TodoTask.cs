@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ namespace TODO.Models
     {
         [BsonId]
         [BindNever]
-        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
 
         [BsonElement("name")]
@@ -23,6 +24,11 @@ namespace TODO.Models
         [BsonElement("isCompleted")]
         [BindNever]
         public bool IsCompleted { get; set; }
+
+        [BsonElement("authorId")]
+        [BindNever]
+        [BsonRepresentation(BsonType.ObjectId)] 
+        public string? AuthorId { get; set; }
 
         [BsonElement("createdAt")]
         [BindNever]

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AspNetCore.Identity.Mongo.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TODO.Models;
@@ -6,28 +9,45 @@ using TODO.Services;
 
 namespace TODO.Controllers
 {
+    [Authorize]
     public class TaskController : Controller
     {
         private readonly TaskService _taskService;
+        private readonly UserManager<MongoUser> _userManager;
 
-        public TaskController(TaskService taskService)
+        public TaskController(TaskService taskService, UserManager<MongoUser> userManager)
         {
             _taskService = taskService;
+            _userManager = userManager; 
         }
         // GET: TaskController
         public async Task<ActionResult> Index()
         {
-            var tasks = await _taskService.GetAllAsync();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized("User must be authenticated.");
+
+            var tasks = await _taskService.GetAllAsync(user.Id.ToString());
             return View(tasks);
         }
 
         // GET: TaskController/Details/{id}
         public async Task<ActionResult> Details(string id)
         {
-            var task = await _taskService.GetByIdAsync(id);
-            if (task == null)
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Unauthorized("User must be authenticated.");
+
+                var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
+                return View(task);
+            }
+            catch (KeyNotFoundException)
+            {
                 return NotFound();
-            return View(task);
+            }
+
         }
 
         // GET: TaskController/Create
@@ -41,6 +61,16 @@ namespace TODO.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(TodoTask todoTask)
         {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized("User must be authenticated.");
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "User not found.");
+                return View(todoTask);
+            }
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
@@ -50,17 +80,31 @@ namespace TODO.Controllers
                 }
                 return View(todoTask);
             }
-            await _taskService.CreateAsync(todoTask);
+
+            await _taskService.CreateAsync(todoTask, user.Id.ToString());
             return RedirectToAction(nameof(Index));
         }
 
         // GET: TaskController/Edit/{id}
         public async Task<ActionResult> Edit(string id)
         {
-                var task = await _taskService.GetByIdAsync(id);
-                if (task == null)
-                    return NotFound();
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Unauthorized("User must be authenticated.");
+
+                var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
                 return View(task);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("You are not authorized to edit this task.");
+            }
         }
 
         // POST: TaskController/Edit/{id}
@@ -71,19 +115,47 @@ namespace TODO.Controllers
             if (!ModelState.IsValid)
                 return View(todoTask);
 
-            var updated = await _taskService.UpdateAsync(id, todoTask);
-            if (!updated)
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Unauthorized("User must be authenticated.");
+
+                var updated = await _taskService.UpdateAsync(id, todoTask, user.Id.ToString());
+                if (!updated)
+                    return NotFound();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (KeyNotFoundException)
+            {
                 return NotFound();
-            return RedirectToAction(nameof(Index));
+            } 
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("You are not authorized to edit this task.");
+            }
         }
 
         // GET: TaskController/Delete/{id}
         public async Task<ActionResult> Delete(string id)
         {
-            var task = await _taskService.GetByIdAsync(id);
-            if (task == null)
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Unauthorized("User must be authenticated.");
+
+                var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
+                return View(task);
+            }
+            catch (KeyNotFoundException)
+            {
                 return NotFound();
-            return View(task);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("You are not authorized to delete this task.");
+            }
         }
 
         // POST: TaskController/Delete/{id}
@@ -91,11 +163,25 @@ namespace TODO.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(string id, TodoTask todoTask)
         {
-            var deleted = await _taskService.DeleteAsync(id);
-            if (!deleted)
-                return NotFound();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Unauthorized("User must be authenticated.");
 
+                var deleted = await _taskService.DeleteAsync(id, user.Id.ToString());
+                if (!deleted)
+                    return NotFound();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("You are not authorized to delete this task.");
+            }
         }
 
         // POST: TaskController/Complete/{id}
@@ -103,10 +189,25 @@ namespace TODO.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Complete(string id)
         {
-            var result = await _taskService.CompleteAsync(id);
-            if (!result)
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                    return Unauthorized("User must be authenticated.");
+
+                var result = await _taskService.CompleteAsync(id, user.Id.ToString());
+                if (!result)
+                    return NotFound();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (KeyNotFoundException)
+            {
                 return NotFound();
-            return RedirectToAction(nameof(Index));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("You are not authorized to complete this task.");
+            }
         }
     }
 
