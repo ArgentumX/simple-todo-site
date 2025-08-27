@@ -1,7 +1,7 @@
 ﻿using AspNetCore.Identity.Mongo.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TODO.Models.User;
+using TODO.Models.User.view;
 
 namespace TODO.Services
 {
@@ -16,9 +16,9 @@ namespace TODO.Services
             _signInManager = signInManager;
         }
 
-        public async Task<(bool Success, IEnumerable<string> Errors)> Register(CreateUserModel model)
+        public async Task<(bool Success, IEnumerable<string> Errors)> Register(RegistrationViewModel model)
         {
-            var user = new MongoUser { UserName = model.Username };
+            var user = new MongoUser { UserName = model.Username, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -31,9 +31,9 @@ namespace TODO.Services
             return (false, errors);
         }
 
-        public async Task<bool> Login(string username, string password)
+        public async Task<bool> Login(LoginViewModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(username, password, true, false);
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, false);
             return result.Succeeded;
         }
 

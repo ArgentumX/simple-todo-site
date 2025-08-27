@@ -1,11 +1,13 @@
 ﻿using AspNetCore.Identity.Mongo.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TODO.Models.User;
+using TODO.Models.User.view;
 using TODO.Services;
 
 namespace TODO.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
 
@@ -16,11 +18,13 @@ namespace TODO.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register() => View(new CreateUserModel());
+        [AllowAnonymous]
+        public IActionResult Register() => View(new RegistrationViewModel());
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(CreateUserModel model)
+        public async Task<IActionResult> Register(RegistrationViewModel model)
         {
             if (!ModelState.IsValid) {
                 return View(model);
@@ -38,17 +42,21 @@ namespace TODO.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login() => View();
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var result = await _accountService.Login(username, password);
+            var result = await _accountService.Login(model);
             if (result)
                 return RedirectToAction("Index", "task");
 
-            return BadRequest("Wrong username or password");
+
+            ModelState.AddModelError("INVALID_LOGIN_ATTEMPT", "Wrong username or password");
+            return View(model);
         }
 
         [HttpPost]

@@ -1,15 +1,19 @@
-﻿using MongoDB.Driver;
+﻿using AutoMapper;
+using MongoDB.Driver;
 using System.Threading.Tasks;
-using TODO.Models;
+using TODO.Models.Task;
+using TODO.Models.Task.view;
 
 namespace TODO.Services
 {
     public class TaskService
     {
         private readonly IMongoCollection<TodoTask> _todoTasks;
+        private readonly IMapper _mapper;
 
-        public TaskService(IMongoDatabase database)
+        public TaskService(IMongoDatabase database, IMapper mapper)
         {
+            _mapper = mapper;
             _todoTasks = database.GetCollection<TodoTask>("TodoTasks");
         }
 
@@ -32,15 +36,18 @@ namespace TODO.Services
             EnsureUserIsAuthor(task, userId);
             return task;
         }
-        public async Task CreateAsync(TodoTask todoTask, string userId)
+        public async Task CreateAsync(CreateTaskViewModel model, string userId)
         {
-            if (todoTask == null)
-                throw new ArgumentNullException(nameof(todoTask));
+
+            TodoTask task = _mapper.Map<TodoTask>(model);
+
+            if (task == null)
+                throw new ArgumentNullException(nameof(task));
             if (string.IsNullOrEmpty(userId))
                 throw new ArgumentNullException(nameof(userId));
 
-            todoTask.AuthorId = userId;
-            await _todoTasks.InsertOneAsync(todoTask);
+            task.AuthorId = userId;
+            await _todoTasks.InsertOneAsync(task);
         }
 
         public async Task<bool> UpdateAsync(string id, TodoTask source, string userId)

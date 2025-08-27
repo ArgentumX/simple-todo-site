@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace TODO.Models
+namespace TODO.Models.Task
 {
     public class TodoTask
     {

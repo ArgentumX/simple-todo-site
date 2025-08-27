@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using TODO.Models;
+using TODO.Models.Task;
+using TODO.Models.Task.view;
 using TODO.Services;
 
 namespace TODO.Controllers
@@ -53,22 +54,19 @@ namespace TODO.Controllers
         // GET: TaskController/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new CreateTaskViewModel());
         }
 
         // POST: TaskController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(TodoTask todoTask)
+        public async Task<ActionResult> Create(CreateTaskViewModel model)
         {
-            if (!User.Identity.IsAuthenticated)
-                return Unauthorized("User must be authenticated.");
-
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 ModelState.AddModelError("", "User not found.");
-                return View(todoTask);
+                return View(model);
             }
 
             if (!ModelState.IsValid)
@@ -78,10 +76,10 @@ namespace TODO.Controllers
                 {
                     ModelState.AddModelError("", error);
                 }
-                return View(todoTask);
+                return View(model);
             }
 
-            await _taskService.CreateAsync(todoTask, user.Id.ToString());
+            await _taskService.CreateAsync(model, user.Id.ToString());
             return RedirectToAction(nameof(Index));
         }
 

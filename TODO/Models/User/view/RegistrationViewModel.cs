@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TODO.Models.User
+namespace TODO.Models.User.view
 {
-    public class CreateUserModel
+    public class RegistrationViewModel
     {
         [Required(ErrorMessage = "Username is required")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters")]
@@ -24,5 +24,12 @@ namespace TODO.Models.User
         [DataType(DataType.Password)]
         [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; }
+
+
+        [Required(ErrorMessage = "Email is required")]
+        [DataType(DataType.EmailAddress)]
+        [Display(Name = "Email")]
+        [EmailAddress]
+        public string Email { get; set; }
     }
 }

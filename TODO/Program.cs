@@ -1,6 +1,8 @@
 using AspNetCore.Identity.Mongo;
 using AspNetCore.Identity.Mongo.Model;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using TODO.Services;
 
@@ -37,6 +39,10 @@ builder.Services.Configure<IdentityOptions>(options =>
 // Inner services
 builder.Services.AddSingleton<TaskService>();
 builder.Services.AddScoped<AccountService>();
+
+// mappers
+builder.Services.AddAutoMapper(cfg => { }, typeof(Program).Assembly);
+
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
