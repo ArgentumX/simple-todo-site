@@ -1,6 +1,7 @@
 ﻿using AspNetCore.Identity.Mongo.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using TODO.Models.User;
 using TODO.Services;
 
 namespace TODO.Controllers
@@ -15,20 +16,25 @@ namespace TODO.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register() => View();
+        public IActionResult Register() => View(new CreateUserModel());
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(string username, string password)
+        public async Task<IActionResult> Register(CreateUserModel model)
         {
-            var result = await _accountService.Register(username, password);
+            if (!ModelState.IsValid) {
+                return View(model);
+            }
+            var (success, errors) = await _accountService.Register(model);
 
-            if (result)
-                return RedirectToAction("Index", "task");
+            if (success)
+                return RedirectToAction("Index", "Task");
 
+            foreach (var error in errors) {
+                ModelState.AddModelError(string.Empty, error);
+            }
 
-            
-            return BadRequest();
+            return View(model);
         }
 
         [HttpGet]

@@ -2,29 +2,71 @@
     ViewData["Title"] = "Register";
 }
 
+@model TODO.Models.User.CreateUserModel
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <h2 class="mb-4 text-center">Create an Account</h2>
+            <h2 class="mb-4 text-center text-light">Create an Account</h2>
 
             <form method="post" asp-action="Register">
                 @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required />
+                    <input asp-for="Username" class="form-control bg-dark text-light border-secondary" placeholder="Enter username" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required />
+                    <div class="input-group">
+                        <input asp-for="Password" class="form-control bg-dark text-light border-secondary" placeholder="Enter password" />
+                        <span class="input-group-text bg-dark border-secondary toggle-password" data-target="Password">
+                            <i class="bi bi-eye text-light"></i>
+                        </span>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Register</button>
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input asp-for="ConfirmPassword" class="form-control bg-dark text-light border-secondary" placeholder="Confirm password" />
+                        <span class="input-group-text bg-dark border-secondary toggle-password" data-target="ConfirmPassword">
+                            <i class="bi bi-eye text-light"></i>
+                        </span>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">Register</button>
+
+                <p class="mt-3 text-center">
+                    Already have an account? <a asp-controller="Account" asp-action="Login" class="text-light">Login here</a>
+                </p>
             </form>
-
-            <p class="mt-3 text-center">
-                Already have an account? <a asp-controller="Account" asp-action="Login" class="text-light">Login here</a>
-            </p>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        });
+    </script>
+}
