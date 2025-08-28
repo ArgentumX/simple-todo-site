@@ -1,4 +1,5 @@
 ﻿using AspNetCore.Identity.Mongo.Model;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,11 +16,13 @@ namespace TODO.Controllers
     {
         private readonly TaskService _taskService;
         private readonly UserManager<MongoUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public TaskController(TaskService taskService, UserManager<MongoUser> userManager)
+        public TaskController(TaskService taskService, UserManager<MongoUser> userManager, IMapper mapper)
         {
             _taskService = taskService;
             _userManager = userManager; 
+            _mapper = mapper;
         }
         // GET: TaskController
         public async Task<ActionResult> Index()
@@ -29,7 +32,8 @@ namespace TODO.Controllers
                 return Unauthorized("User must be authenticated.");
 
             var tasks = await _taskService.GetAllAsync(user.Id.ToString());
-            return View(tasks);
+            var taskViewModels = _mapper.Map<List<TaskViewModel>>(tasks);
+            return View(taskViewModels);
         }
 
         // GET: TaskController/Details/{id}
@@ -42,7 +46,8 @@ namespace TODO.Controllers
                     return Unauthorized("User must be authenticated.");
 
                 var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
-                return View(task);
+                var viewModel = _mapper.Map<TaskViewModel>(task);
+                return View(viewModel);
             }
             catch (KeyNotFoundException)
             {
@@ -93,7 +98,8 @@ namespace TODO.Controllers
                     return Unauthorized("User must be authenticated.");
 
                 var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
-                return View(task);
+                var editViewModel = _mapper.Map<EditTaskViewModel>(task);
+                return View(editViewModel);
             }
             catch (KeyNotFoundException)
             {
@@ -108,10 +114,10 @@ namespace TODO.Controllers
         // POST: TaskController/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(string id, TodoTask todoTask)
+        public async Task<ActionResult> Edit(string id, EditTaskViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(todoTask);
+                return View(model);
 
             try
             {
@@ -119,7 +125,7 @@ namespace TODO.Controllers
                 if (user == null)
                     return Unauthorized("User must be authenticated.");
 
-                var updated = await _taskService.UpdateAsync(id, todoTask, user.Id.ToString());
+                var updated = await _taskService.UpdateAsync(id, model, user.Id.ToString());
                 if (!updated)
                     return NotFound();
                 return RedirectToAction(nameof(Index));
@@ -144,7 +150,8 @@ namespace TODO.Controllers
                     return Unauthorized("User must be authenticated.");
 
                 var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
-                return View(task);
+                var viewModel = _mapper.Map<TaskViewModel>(task);
+                return View(viewModel);
             }
             catch (KeyNotFoundException)
             {
@@ -159,7 +166,7 @@ namespace TODO.Controllers
         // POST: TaskController/Delete/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(string id, TodoTask todoTask)
+        public async Task<ActionResult> Delete(string id, TaskViewModel model)
         {
             try
             {

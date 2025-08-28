@@ -50,7 +50,7 @@ namespace TODO.Services
             await _todoTasks.InsertOneAsync(task);
         }
 
-        public async Task<bool> UpdateAsync(string id, TodoTask source, string userId)
+        public async Task<bool> UpdateAsync(string id, EditTaskViewModel source, string userId)
         {
             if (string.IsNullOrEmpty(id))
                 throw new ArgumentNullException(nameof(id));
