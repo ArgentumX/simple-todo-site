@@ -39,20 +39,13 @@ namespace TODO.Controllers
         // GET: TaskController/Details/{id}
         public async Task<ActionResult> Details(string id)
         {
-            try
-            {
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null)
-                    return Unauthorized("User must be authenticated.");
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized("User must be authenticated.");
 
-                var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
-                var viewModel = _mapper.Map<TaskViewModel>(task);
-                return View(viewModel);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
+            var viewModel = _mapper.Map<TaskViewModel>(task);
+            return View(viewModel);
 
         }
 
@@ -91,24 +84,13 @@ namespace TODO.Controllers
         // GET: TaskController/Edit/{id}
         public async Task<ActionResult> Edit(string id)
         {
-            try
-            {
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null)
-                    return Unauthorized("User must be authenticated.");
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized("User must be authenticated.");
 
-                var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
-                var editViewModel = _mapper.Map<EditTaskViewModel>(task);
-                return View(editViewModel);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized("You are not authorized to edit this task.");
-            }
+            var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
+            var editViewModel = _mapper.Map<EditTaskViewModel>(task);
+            return View(editViewModel);
         }
 
         // POST: TaskController/Edit/{id}
@@ -119,46 +101,25 @@ namespace TODO.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            try
-            {
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null)
-                    return Unauthorized("User must be authenticated.");
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized("User must be authenticated.");
 
-                var updated = await _taskService.UpdateAsync(id, model, user.Id.ToString());
-                return RedirectToAction(nameof(Index));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            } 
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized("You are not authorized to edit this task.");
-            }
+            var updated = await _taskService.UpdateAsync(id, model, user.Id.ToString());
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: TaskController/Delete/{id}
         public async Task<ActionResult> Delete(string id)
         {
-            try
-            {
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null)
-                    return Unauthorized("User must be authenticated.");
 
-                var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
-                var viewModel = _mapper.Map<TaskViewModel>(task);
-                return View(viewModel);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized("You are not authorized to delete this task.");
-            }
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized("User must be authenticated.");
+
+            var task = await _taskService.GetByIdAsync(id, user.Id.ToString());
+            var viewModel = _mapper.Map<TaskViewModel>(task);
+            return View(viewModel);
         }
 
         // POST: TaskController/Delete/{id}
@@ -166,25 +127,14 @@ namespace TODO.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(string id, TaskViewModel model)
         {
-            try
-            {
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null)
-                    return Unauthorized("User must be authenticated.");
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized("User must be authenticated.");
 
-                var deleted = await _taskService.DeleteAsync(id, user.Id.ToString());
-                if (!deleted)
-                    return NotFound();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (KeyNotFoundException)
-            {
+            var deleted = await _taskService.DeleteAsync(id, user.Id.ToString());
+            if (!deleted)
                 return NotFound();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized("You are not authorized to delete this task.");
-            }
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: TaskController/Complete/{id}
@@ -192,25 +142,16 @@ namespace TODO.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Complete(string id)
         {
-            try
-            {
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null)
-                    return Unauthorized("User must be authenticated.");
 
-                var result = await _taskService.CompleteAsync(id, user.Id.ToString());
-                if (!result)
-                    return NotFound();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (KeyNotFoundException)
-            {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized("User must be authenticated.");
+
+            var result = await _taskService.CompleteAsync(id, user.Id.ToString());
+            if (!result)
                 return NotFound();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized("You are not authorized to complete this task.");
-            }
+            return RedirectToAction(nameof(Index));
+
         }
     }
 

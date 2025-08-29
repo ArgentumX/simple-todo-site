@@ -13,7 +13,7 @@ builder.Services.AddControllersWithViews();
 
 // MongoDB
 builder.Services.AddSingleton<IMongoClient>(sp =>
-    new MongoClient("mongodb://localhost:27017"));
+    new MongoClient(builder.Configuration.GetValue<string>("DB:DefaultConnection")));
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IMongoClient>().GetDatabase("TodoDb"));
 builder.Services.AddIdentityMongoDbProvider<MongoUser>();
