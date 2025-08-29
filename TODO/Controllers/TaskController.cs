@@ -126,8 +126,6 @@ namespace TODO.Controllers
                     return Unauthorized("User must be authenticated.");
 
                 var updated = await _taskService.UpdateAsync(id, model, user.Id.ToString());
-                if (!updated)
-                    return NotFound();
                 return RedirectToAction(nameof(Index));
             }
             catch (KeyNotFoundException)

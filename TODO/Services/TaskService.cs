@@ -19,7 +19,10 @@ namespace TODO.Services
 
         public async Task<List<TodoTask>> GetAllAsync(string userId)
         {
-            return await _todoTasks.Find(todoTask => todoTask.AuthorId == userId).ToListAsync();
+            return await _todoTasks
+                .Find(task => task.AuthorId == userId)
+                .SortBy(task => task.IsCompleted)
+                .ToListAsync();
         }
 
         public async Task<TodoTask> GetByIdAsync(string id, string userId)
